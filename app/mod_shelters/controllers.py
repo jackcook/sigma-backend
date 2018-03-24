@@ -14,19 +14,12 @@ def get_shelters():
     # Set initial values to be modified as we read through blocks
     shelters = []
 
-    def remove_shelter_if_exists(shelter_id):
-        for idx, shelter in enumerate(shelters):
-            if shelter.shelter_id == shelter_id:
-                shelters.pop(idx)
-
     # Loop through all blocks in the blockchain
     for block in blockchain.chain:
         # Loop through all transactions in each block
         for transaction in block["transactions"]:
             if transaction["type"] == "new_shelter" or transaction["type"] == "update_shelter":
                 shelter_id = transaction["shelter_id"]
-                remove_shelter_if_exists(shelter_id)
-
                 name = transaction["name"]
                 address = transaction["address"]
                 lat = transaction["lat"]
@@ -34,8 +27,15 @@ def get_shelters():
                 data = transaction["data"]
 
                 shelter = Shelter(shelter_id, name, address, lat, lng, data)
-                shelters.append(shelter)
 
+                if transaction["type"] == "update_shelter":
+                    # If this shelter is already in the list, remove it first
+                    for idx, temp_shelter in enumerate(shelters):
+                        if temp_shelter.shelter_id == shelter_id:
+                            shelters.pop(idx)
+                            break
+
+                shelters.append(shelter)
 
     # Return resulting shelters array
     return jsonify([x.serialize() for x in shelters])
