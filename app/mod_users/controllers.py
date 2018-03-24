@@ -18,7 +18,7 @@ def get_user(user_id):
     for block in blockchain.chain:
         # Loop through all transactions in each block
         for transaction in block["transactions"]:
-            if transaction["type"] == "new_user":
+            if transaction["type"] == "new_user" and transaction["user_id"] == user_id:
                 # Save initial user data
                 user_id = transaction["user_id"]
                 name = transaction["name"]
