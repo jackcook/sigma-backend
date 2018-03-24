@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from uuid import uuid4
 
 from app import blockchain, node_identifier
@@ -9,6 +9,8 @@ mod_users = Blueprint("users", __name__, url_prefix="/users")
 @mod_users.route("/<user_id>", methods=["GET"])
 def get_user(user_id):
     # Set initial values to be modified as we read through blocks
+    user_id = None
+    name = None
     balance = 0
     transactions = []
 
@@ -16,7 +18,12 @@ def get_user(user_id):
     for block in blockchain.chain:
         # Loop through all transactions in each block
         for transaction in block["transactions"]:
-            if transaction["type"] == "new_user" or transaction["type"] == "transaction":
+            if transaction["type"] == "new_user":
+                # Save initial user data
+                user_id = transaction["user_id"]
+                name = transaction["name"]
+                balance += transaction["balance"]
+            elif transaction["type"] == "transaction":
                 if transaction["recipient"] == user_id:
                     # Add to the balance if this user received coins
                     balance += transaction["amount"]
@@ -27,7 +34,7 @@ def get_user(user_id):
                     transactions.append(transaction)
 
     # Create the resulting user object
-    user = User(balance, transactions, user_id)
+    user = User(user_id, name, balance, transactions)
     return jsonify(user.serialize())
 
 @mod_users.route("", methods=["POST"])
@@ -39,13 +46,17 @@ def create_user():
     proof = blockchain.proof_of_work(last_block)
 
     # Generate a globally unique address for this user
-    user_identifier = str(uuid4()).replace('-', '')
+    user_identifier = str(uuid4()).replace("-", "")
+
+    # Retrieve user data from request
+    values = request.get_json()
+    name = values["name"]
 
     # Add an initial amount to the new user's balance
     blockchain.new_transaction({
-        "sender": node_identifier,
-        "recipient": user_identifier,
-        "amount": 10,
+        "user_id": user_identifier,
+        "balance": 10,
+        "name": name,
         "type": "new_user"
     })
 

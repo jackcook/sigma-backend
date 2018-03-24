@@ -1,13 +1,15 @@
 class User:
 
-    def __init__(self, balance, transactions, user_id):
+    def __init__(self, user_id, name, balance, transactions):
+        self.user_id = user_id
+        self.name = name
         self.balance = balance
         self.transactions = transactions
-        self.user_id = user_id
 
     def serialize(self):
         return {
             "id": self.user_id,
+            "name": self.name,
             "balance": self.balance,
             "transactions": self.transactions
         }
