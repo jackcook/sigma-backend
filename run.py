@@ -7,8 +7,4 @@ configure_app(application)
 
 if __name__ == "__main__":
     # Run the Flask app if this is called from the command line
-    application.run(
-        debug=True,
-        host="0.0.0.0",
-        port=8000
-    )
+    application.run()
