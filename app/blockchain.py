@@ -51,7 +51,7 @@ class Blockchain:
                 return False
 
             # Check that the Proof of Work is correct
-            if not self.valid_proof(last_block['proof'], block['proof'], last_block['previous_hash']):
+            if not self.valid_proof(last_block['proof'], block['proof'], block['previous_hash']):
                 return False
 
             last_block = block
@@ -78,8 +78,8 @@ class Blockchain:
             response = requests.get(f'http://{node}/chain')
 
             if response.status_code == 200:
-                length = response.json()['length']
-                chain = response.json()['chain']
+                chain = response.json()
+                length = len(chain)
 
                 # Check if the length is longer and the chain is valid
                 if length > max_length and self.valid_chain(chain):
@@ -164,7 +164,7 @@ class Blockchain:
         last_hash = self.hash(last_block)
 
         proof = 0
-        while self.valid_proof(last_proof, proof, last_hash) is False:
+        while not self.valid_proof(last_proof, proof, last_hash):
             proof += 1
 
         return proof
