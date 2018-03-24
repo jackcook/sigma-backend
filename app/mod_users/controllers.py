@@ -16,14 +16,15 @@ def get_user(user_id):
     for block in blockchain.chain:
         # Loop through all transactions in each block
         for transaction in block["transactions"]:
-            if transaction["recipient"] == user_id:
-                # Add to the balance if this user received coins
-                balance += transaction["amount"]
-                transactions.append(transaction)
-            elif transaction["sender"] == user_id:
-                # Subtract from the balance if this user spent coins
-                balance -= transaction["amount"]
-                transactions.append(transaction)
+            if transaction["type"] == "new_user" or transaction["type"] == "transaction":
+                if transaction["recipient"] == user_id:
+                    # Add to the balance if this user received coins
+                    balance += transaction["amount"]
+                    transactions.append(transaction)
+                elif transaction["sender"] == user_id:
+                    # Subtract from the balance if this user spent coins
+                    balance -= transaction["amount"]
+                    transactions.append(transaction)
 
     # Create the resulting user object
     user = User(balance, transactions, user_id)
@@ -41,11 +42,12 @@ def create_user():
     user_identifier = str(uuid4()).replace('-', '')
 
     # Add an initial amount to the new user's balance
-    blockchain.new_transaction(
-        sender=node_identifier,
-        recipient=user_identifier,
-        amount=10,
-    )
+    blockchain.new_transaction({
+        "sender": node_identifier,
+        "recipient": user_identifier,
+        "amount": 10,
+        "type": "new_user"
+    })
 
     # Forge the new block by adding it to the chain
     previous_hash = blockchain.hash(last_block)

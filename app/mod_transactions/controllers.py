@@ -19,11 +19,12 @@ def create_purchase_transaction():
     values = request.get_json()
 
     # Create a new transaction
-    blockchain.new_transaction(
-        sender=values["sender"],
-        recipient=node_identifier,
-        amount=int(values["amount"])
-    )
+    blockchain.new_transaction({
+        "sender": values["sender"],
+        "recipient": node_identifier,
+        "amount": int(values["amount"]),
+        "type": "transaction"
+    })
 
     # Forge the new block by adding it to the chain
     previous_hash = blockchain.hash(last_block)
@@ -51,11 +52,12 @@ def create_reward_transaction():
     values = request.get_json()
 
     # Create a new transaction
-    blockchain.new_transaction(
-        sender=node_identifier,
-        recipient=values["recipient"],
-        amount=int(values["amount"])
-    )
+    blockchain.new_transaction({
+        "sender": node_identifier,
+        "recipient": values["recipient"],
+        "amount": int(values["amount"]),
+        "type": "transaction"
+    })
 
     # Forge the new block by adding it to the chain
     previous_hash = blockchain.hash(last_block)
