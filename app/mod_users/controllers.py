@@ -9,7 +9,6 @@ mod_users = Blueprint("users", __name__, url_prefix="/users")
 @mod_users.route("/<user_id>", methods=["GET"])
 def get_user(user_id):
     # Set initial values to be modified as we read through blocks
-    user_id = None
     name = None
     balance = 0
     transactions = []
