@@ -1,10 +1,14 @@
 from flask import Flask
-import os, sys
-
 from app import configure_app
 
+# Create and configure the Flask application
 application = Flask(__name__)
 configure_app(application)
 
 if __name__ == "__main__":
-    application.run(host='0.0.0.0', port=5001, debug=True)
+    # Run the Flask app if this is called from the command line
+    application.run(
+        debug=True,
+        host="0.0.0.0",
+        port=5001
+    )

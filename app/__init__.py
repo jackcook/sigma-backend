@@ -1,12 +1,15 @@
 from uuid import uuid4
 
+# Relative import from blockchain file
 from .blockchain import Blockchain
 
+# Create the blockchain
 blockchain = Blockchain()
 
 # Generate a globally unique address for this node
 node_identifier = "shelter-" + str(uuid4()).replace('-', '')
 
+# Configure the backend application, register all blueprints
 def configure_app(app):
     from app.mod_chain.controllers import mod_chain as chain_module
     from app.mod_transactions.controllers import mod_transactions as transactions_module
