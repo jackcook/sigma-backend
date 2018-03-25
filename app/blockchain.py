@@ -123,6 +123,7 @@ class Blockchain:
         :param data: Data for the transaction
         :return: The index of the Block that will hold this transaction
         """
+        data["timestamp"] = int(time())
         self.current_transactions.append(data)
 
         return self.last_block['index'] + 1
